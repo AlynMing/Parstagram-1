@@ -24,3 +24,6 @@ The following **bonus** features are implemented:
 Here's a walkthrough of implemented user stories:
 
 <img src='http://g.recordit.co/1t2WVdizd1.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
+## Additional Notes
+Included logout button and cancel button for FeedViewController and CameraViewController
