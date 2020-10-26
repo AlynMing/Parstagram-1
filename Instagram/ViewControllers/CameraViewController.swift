@@ -12,18 +12,25 @@ import Parse
 class CameraViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
 
     @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var commentTextField: UITextField!
+    @IBOutlet weak var commentTextView: UITextView!
+    @IBOutlet weak var submitButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        commentTextView.becomeFirstResponder()
 
-        // Do any additional setup after loading the view.
+        commentTextView.layer.borderWidth = 1
+        commentTextView.layer.borderColor = UIColor.black.cgColor
+        commentTextView.layer.cornerRadius = 15
+        
+        submitButton.layer.cornerRadius = 10
     }
     
     @IBAction func didTapSubmit(_ sender: Any) {
         let post = PFObject(className: "Posts")
         
-        post["caption"] = commentTextField.text
+        post["caption"] = commentTextView.text
         post["user"] = PFUser.current()
         
         //Saves image in database
@@ -55,18 +62,25 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate & 
         present(picker, animated: true, completion: nil)
     }
     
+    @IBAction func didTapView(_ sender: Any) {
+        commentTextView.resignFirstResponder()
+    }
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let image = info[.editedImage] as! UIImage
         
         //Adjusts size of image
         let size = CGSize(width: 300, height: 300)
-        let scaledImage = image.af_imageScaled(to: size)
+        let scaledImage = image.af_imageAspectScaled(toFill: size)
         
         imageView.image = scaledImage
         
         dismiss(animated: true, completion: nil)
     }
     
+    @IBAction func didTapCancel(_ sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
+    }
     
     /*
     // MARK: - Navigation

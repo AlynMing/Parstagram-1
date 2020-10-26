@@ -15,11 +15,21 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var signUpButton: UIButton!
     @IBOutlet weak var signInButton: UIButton!
     
+    let defaults = UserDefaults.standard
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         signUpButton.layer.cornerRadius = 10
         signInButton.layer.cornerRadius = 10
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if defaults.bool(forKey: "loggedIn") == true{
+            self.performSegue(withIdentifier: "loginSegue", sender: nil)
+        }
     }
     
     @IBAction func didTapSignIn(_ sender: Any) {
@@ -29,9 +39,19 @@ class LoginViewController: UIViewController {
         PFUser.logInWithUsername(inBackground: username, password: password) {(user, error) in
             if user != nil{
                 self.performSegue(withIdentifier: "loginSegue", sender: nil)
+                self.usernameTextField.text = ""
+                self.passwordTextField.text = ""
+                self.defaults.setValue(true, forKey: "loggedIn")
                 print("Successfully logged in")
             } else {
                 print("Could not sign in: \(error)")
+                let alert = UIAlertController(title: "Invalid username and/or password", message: "Please verify your information", preferredStyle: UIAlertController.Style(rawValue: 1)!)
+                
+                alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.default, handler: { _ in
+                    alert.dismiss(animated: true, completion: nil)
+                }))
+                
+                self.present(alert, animated: true, completion: nil)
             }
         }
     }
@@ -44,6 +64,9 @@ class LoginViewController: UIViewController {
         user.signUpInBackground { (success, error) in
             if (success){
                 self.performSegue(withIdentifier: "loginSegue", sender: nil)
+                self.usernameTextField.text = ""
+                self.passwordTextField.text = ""
+                self.defaults.setValue(true, forKey: "loggedIn")
             } else {
                 print("Could not sign up: \(error)")
             }
